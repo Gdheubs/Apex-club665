@@ -8,48 +8,15 @@ const ContentFeed = () => {
 
     // Move mockPosts inside useEffect to avoid the dependency warning
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                // Mock data for demonstration
-                const mockPosts = [
-                    {
-                        id: 1,
-                        author: {
-                            name: 'Sarah J.',
-                            avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150',
-                            verified: true
-                        },
-                        type: 'image',
-                        thumbnail: 'https://images.pexels.com/photos/3052361/pexels-photo-3052361.jpeg?auto=compress&cs=tinysrgb&w=800',
-                        title: 'Sunset Vibes',
-                        description: 'Capturing the perfect moment',
-                        likes: 1234,
-                        comments: 89,
-                        tokens: 50,
-                        premium: true
-                    },
-                    {
-                        id: 2,
-                        author: {
-                            name: 'Michael R.',
-                            avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
-                            verified: true
-                        },
-                        type: 'video',
-                        thumbnail: 'https://images.pexels.com/photos/3062545/pexels-photo-3062545.jpeg?auto=compress&cs=tinysrgb&w=800',
-                        title: 'Urban Photography Tips',
-                        description: 'Learn my secret techniques',
-                        likes: 856,
-                        comments: 45,
-                        tokens: 100,
-                        premium: true
-                    }
-                ];
-
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                setPosts(mockPosts);
-                setIsLoading(false);
+const fetchPosts = async () => {
+    try {
+        const response = await fetch('/api/content'); // Replace with actual API endpoint
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts');
+        }
+        const data = await response.json();
+        setPosts(data);
+        setIsLoading(false);
             } catch (err) {
                 setError('Failed to load content. Please try again later.');
                 setIsLoading(false);

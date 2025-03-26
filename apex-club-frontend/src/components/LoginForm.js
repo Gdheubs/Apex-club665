@@ -62,11 +62,22 @@ const LoginForm = () => {
         setLoginError('');
 
         try {
-            // Simulated API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // For demo purposes, we'll just set a token
-            localStorage.setItem('apexToken', 'demo-token');
+            const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // Store the token in local storage
+            localStorage.setItem('apexToken', data.data.token);
             
             // Navigate to the protected route the user tried to access, or default to feed
             navigate(from, { replace: true });

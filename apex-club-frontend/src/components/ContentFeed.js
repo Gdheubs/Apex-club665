@@ -6,17 +6,16 @@ const ContentFeed = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all');
 
-    // Move mockPosts inside useEffect to avoid the dependency warning
     useEffect(() => {
-const fetchPosts = async () => {
-    try {
-        const response = await fetch('/api/content'); // Replace with actual API endpoint
-        if (!response.ok) {
-            throw new Error('Failed to fetch posts');
-        }
-        const data = await response.json();
-        setPosts(data);
-        setIsLoading(false);
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch('/api/content'); // Replace with actual API endpoint
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+                const data = await response.json();
+                setPosts(data);
+                setIsLoading(false);
             } catch (err) {
                 setError('Failed to load content. Please try again later.');
                 setIsLoading(false);
@@ -24,25 +23,7 @@ const fetchPosts = async () => {
         };
 
         fetchPosts();
-
-        // Add protection against screenshots and recordings
-        const preventCapture = (e) => {
-            e.preventDefault();
-            return false;
-        };
-
-        document.addEventListener('contextmenu', preventCapture);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
-                preventCapture(e);
-            }
-        });
-
-        return () => {
-            document.removeEventListener('contextmenu', preventCapture);
-            document.removeEventListener('keydown', preventCapture);
-        };
-    }, []); // Empty dependency array since we don't have external dependencies
+    }, []);
 
     const filters = [
         { id: 'all', label: 'All Content' },
@@ -98,7 +79,13 @@ const fetchPosts = async () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {posts.map((post) => (
+                        {posts.filter(post => {
+                            if (filter === 'all') return true;
+                            if (filter === 'images') return post.type === 'image';
+                            if (filter === 'videos') return post.type === 'video';
+                            if (filter === 'premium') return post.premium;
+                            return true;
+                        }).map((post) => (
                             <div
                                 key={post.id}
                                 className="card group cursor-pointer transform hover:scale-[1.02] transition-all duration-300"
@@ -165,7 +152,6 @@ const fetchPosts = async () => {
                         ))}
                     </div>
                 )}
-
                 {/* Load More Button */}
                 <div className="text-center mt-12">
                     <button className="btn-secondary">

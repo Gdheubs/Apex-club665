@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
+const connectDB = require('./utils/database');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -89,9 +89,7 @@ io.on('connection', (socket) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+connectDB();
 
 // Start server
 const PORT = process.env.PORT || 5000;
